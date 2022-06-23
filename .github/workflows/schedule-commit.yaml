@@ -28,7 +28,7 @@ jobs:
         run: brew install xquartz --cask
 
       - name: Install packages
-        run: Rscript -e 'install.packages(c("dplyr", "purrr", "tidyr", "lubridate", "stringr", "readr", "tesseract", "magick"))'
+        run: Rscript -e 'install.packages(c("stringr", "tesseract", "magick"))'
 
       - name: Run script
         run: Rscript -e 'source("R/job.R", echo = TRUE)'
