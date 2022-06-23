@@ -9,6 +9,9 @@ library(readr)
 library(tesseract)
 library(magick)
 
+# Set the timezone so files save with correct date
+Sys.setenv(TZ = "Australia/Sydney")
+
 # Download PDF from the ASX
 pdf_url <- "https://www.asx.com.au/data/trt/ib_expectation_curve_graph.pdf"
 pdf_path <- tempfile(fileext = ".pdf")
