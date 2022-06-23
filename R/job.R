@@ -63,6 +63,8 @@ new_data <- new_data %>%
 # Write a CSV of today's data
 write_csv(new_data, file.path("daily-data",
                               paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
+write_csv(new_data, file.path("latest-data",
+                              paste0("scraped_cash_rate_latest.csv")))
 
 # Load all existing data, combine with latest data
 all_data <- file.path("daily-data") %>%
@@ -70,6 +72,6 @@ all_data <- file.path("daily-data") %>%
              full.names = TRUE) %>%
   read_csv(col_types = "DdD")
 
-saveRDS(all_data,
+write_csv(all_data,
         file = file.path("combined-data",
-                         "all_data.rds"))
+                         "all_data.csv"))
