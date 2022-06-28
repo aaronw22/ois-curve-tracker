@@ -37,8 +37,8 @@ strings <- strings[strings != ""]
 
 string_list <- lapply(strings, function(x) unlist(str_split(x, " ")))
 
-new_data <- setDT(as.data.frame(string_list, col.names = c("date", "cash_rate")))
-new_data[, scrape_date := Sys.Date()]
+new_data <- as.data.frame(string_list, col.names = c("date", "cash_rate"))
+setDT(new_data)[, scrape_date := Sys.Date()]
 new_data[, date := as.Date(paste0("01-", date), "%d-%b-%y")]
 
 # The decimal point is not always picked up; add it in
