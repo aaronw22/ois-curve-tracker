@@ -1,0 +1,31 @@
+---
+output: github_document
+always_allow_html: true
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+
+library(data.table)
+library(magrittr)
+library(plotly)
+```
+
+# ASX Implied Cash Rate
+
+This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Implied Yield Curve from [here](https://www.asx.com.au/data/trt/ib_expectation_curve_graph.pdf) and converts it into a simple csv.
+
+## Implied yield curve
+
+```{r}
+all_data <- fread("combined-data/all_data.csv")
+
+plot_ly(all_data, x = ~date, y = ~cash_rate, color = ~scrape_date, name = ~scrape_date, type = "scatter", mode = "lines")
+```
