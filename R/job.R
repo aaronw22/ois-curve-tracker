@@ -1,5 +1,6 @@
 # Scrape ASX 30 Day Interbank Cash Rate Futures Implied Yield Target from PDF
 
+library(data.table)
 library(stringr)
 library(tesseract)
 library(magick)
@@ -36,38 +37,38 @@ strings <- strings[strings != ""]
 
 string_list <- lapply(strings, function(x) unlist(str_split(x, " ")))
 
-new_data <- as.data.frame(string_list, col.names = c("date", "cash_rate"))
-new_data$scrape_date <- Sys.Date()
-new_data$date <- as.Date(paste0("01-", new_data$date), "%d-%b-%y")
+new_data <- as.data.table(string_list, col.names = c("date", "cash_rate"))
+new_data[, scrape_date := Sys.Date()]
+new_data[, date := as.Date(paste0("01-", date), "%d-%b-%y")]
 
 # The decimal point is not always picked up; add it in
 # Note we are assuming all future cash rates are <10%
-new_data$cash_rate <-
-  ifelse(
-    str_sub(new_data$cash_rate, 2, 2) == ".",
-    new_data$cash_rate,
-    paste0(
-      str_sub(new_data$cash_rate, 1, 1),
-      ".",
-      str_sub(new_data$cash_rate, 2L, -1L)
-    )
+new_data[, cash_rate := ifelse(
+  str_sub(cash_rate, 2, 2) == ".",
+  cash_rate,
+  paste0(
+    str_sub(cash_rate, 1, 1),
+    ".",
+    str_sub(cash_rate, 2L, -1L)
   )
+)]
 
-new_data$cash_rate <- as.numeric(new_data$cash_rate)
+new_data[, cash_rate := as.numeric(cash_rate)]
 
 # Write a CSV of today's data
-write.csv(new_data, file.path("daily-data",
+fwrite(new_data, file.path("daily-data",
                               paste0("scraped_cash_rate_", Sys.Date(), ".csv")),
           row.names = FALSE)
-write.csv(new_data, file.path("latest-data",
+fwrite(new_data, file.path("latest-data",
                               paste0("scraped_cash_rate_latest.csv")),
           row.names = FALSE)
 
 # Load all existing data, combine with latest data
 all_data <- list.files(file.path("daily-data"), pattern = ".csv", full.names = TRUE)
-all_data <- lapply(all_data, function(x) read.csv(x, colClasses = c("Date", "numeric", "Date")))
-all_data <- do.call(rbind, all_data)
+all_data <- lapply(all_data, function(x) fread(x, colClasses = c("Date", "numeric", "Date")))
+all_data <- rbindlist(all_data)
 
-write.csv(all_data,
-          file = file.path("combined-data", "all_data.csv"),
-          row.names = FALSE)
+# Remove duplicated scrape dates
+all_data <- unique(all_data, by = c("date", "scrape_date"))
+
+fwrite(all_data, file = file.path("combined-data", "all_data.csv"))
