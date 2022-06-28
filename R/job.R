@@ -56,12 +56,8 @@ new_data[, cash_rate := ifelse(
 new_data[, cash_rate := as.numeric(cash_rate)]
 
 # Write a CSV of today's data
-fwrite(new_data, file.path("daily-data",
-                              paste0("scraped_cash_rate_", Sys.Date(), ".csv")),
-          row.names = FALSE)
-fwrite(new_data, file.path("latest-data",
-                              paste0("scraped_cash_rate_latest.csv")),
-          row.names = FALSE)
+fwrite(new_data, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
+fwrite(new_data, file.path("latest-data", paste0("scraped_cash_rate_latest.csv")))
 
 # Load all existing data, combine with latest data
 all_data <- list.files(file.path("daily-data"), pattern = ".csv", full.names = TRUE)
