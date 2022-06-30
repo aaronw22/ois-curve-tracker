@@ -23,7 +23,7 @@ This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Impli
 
 ## Implied yield curve
 
-```{r graph, echo = FALSE}
+```{r graph, echo = FALSE, dev = 'svg'}
 all_data <- fread("combined-data/all_data.csv")
 
 # We can't graph all the days because it is far too messy now
@@ -38,4 +38,6 @@ ggplot() +
     x = "Date", y = "Implied cash rate (%)", colour = "Scrape date") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
   theme_bw()
+
+
 ```
