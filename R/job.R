@@ -39,7 +39,7 @@ string_list <- lapply(strings, function(x) unlist(str_split(x, " ")))
 
 new_data <- as.data.frame(string_list, col.names = c("date", "cash_rate"))
 setDT(new_data)[, scrape_date := Sys.Date()]
-new_data[, date := as.Date(paste0("01-", date), "%d-%b-%y")]
+new_data[, date := as.IDate(paste0("01-", date), "%d-%b-%y")][, scrape_date := as.IDate(scrape_date)]
 
 # The decimal point is not always picked up; add it in
 # Note we are assuming all future cash rates are <10%
@@ -59,10 +59,9 @@ new_data[, cash_rate := as.numeric(cash_rate)]
 fwrite(new_data, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
 fwrite(new_data, file.path("latest-data", paste0("scraped_cash_rate_latest.csv")))
 
-# Load all existing data, combine with latest data
-all_data <- list.files(file.path("daily-data"), pattern = ".csv", full.names = TRUE)
-all_data <- lapply(all_data, function(x) fread(x, colClasses = c("Date", "numeric", "Date")))
-all_data <- rbindlist(all_data)
+# Load existing data, combine with latest data
+all_data <- fread(file.path("combined-data", "all_data.csv"))
+all_data <- rbindlist(list(all_data, new_data))
 
 # Remove duplicated scrape dates
 all_data <- unique(all_data, by = c("date", "scrape_date"))
