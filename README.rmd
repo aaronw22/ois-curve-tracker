@@ -28,27 +28,37 @@ all_data <- fread("combined-data/all_data.csv")
 
 # We can't graph all the days because it is far too messy now
 # So grab a weekly sequence of data
-past_seq <- seq.Date(min(all_data$scrape_date), max(all_data$scrape_date) - 1, by = "week")
+past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
 
 ggplot() +
-  geom_line(aes(x = date, y = cash_rate), colour = "black", size = 1, data = all_data[scrape_date == max(scrape_date)]) +
   geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), data = all_data[scrape_date %in% past_seq]) +
+  geom_line(aes(x = date, y = cash_rate), colour = "black", size = 1, data = all_data[scrape_date == max(scrape_date)]) +
   labs(
-    title = "Implied Cash Rate", subtitle = "Latest curve in bolded black",
-    x = "Date", y = "Implied cash rate (%)", colour = "Scrape date") +
+    title = "Implied Cash Rate over Past 8 Weeks", 
+    subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black"),
+    x = "Date", y = "Implied cash rate (%)", colour = "Date") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_colour_discrete(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
   theme_bw()
 
 ```
 
 ```{r graph-change, echo = FALSE, dev = 'svg'}
-# Graph the change in the implied cash rate between the two most recent periods
+# Graph the change in the implied cash rate between the past 2 days, past week and past 4 weeks
 
-all_data[, change := cash_rate - shift(cash_rate), by = date]
+change_data <- all_data[scrape_date %in% c(max(scrape_date), max(scrape_date) - 1, max(scrape_date) - 7, max(scrape_date) - 28)]
 
-ggplot(all_data[scrape_date == max(scrape_date)], aes(x = date, y = change)) +
-  geom_col(fill = "#0b5394") +
-  labs(title = "Change in Implied Cash Rate from Previous Day",
+change_data <- dcast(change_data, date ~ scrape_date, value.var = "cash_rate")
+setnames(change_data, new = c("date", "4 weeks ago", "1 week ago", "1 day ago", "today"))
+cols <- c("4 weeks ago", "1 week ago", "1 day ago")
+change_data[, (cols) := lapply(.SD, function(x) today - x), .SDcols = cols]
+change_data[, today := NULL]
+change_data <- melt(change_data, id.vars = "date")
+change_data[, variable := ordered(variable, c("1 day ago", "1 week ago", "4 weeks ago"))]
+
+ggplot(change_data, aes(x = date, y = value, fill = variable)) +
+  geom_col(position = "dodge") +
+  labs(title = "Change in Implied Cash Rate",
        x = "Date", y = "Change in implied cash rate (ppt)") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
   theme_bw()
