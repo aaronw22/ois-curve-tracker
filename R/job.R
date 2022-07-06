@@ -28,7 +28,7 @@ table_image <-
     y_off = 642 * 3.1
     ))
 table_image <- image_quantize(table_image, colorspace = "gray")
-table_image <- image_transparent(table_image, color = "white", fuzz = 48)
+table_image <- image_transparent(table_image, color = "white", fuzz = 55)
 
 # Extract the characters from the image
 strings <- ocr(table_image)
