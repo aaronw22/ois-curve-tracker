@@ -12,7 +12,7 @@ name: Refresh-Data
 
 jobs:
   R-CMD-check:
-    runs-on: macOS-latest
+    runs-on: ubuntu-16.04
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
@@ -24,10 +24,6 @@ jobs:
           use-public-rspm: true
           
       - uses: r-lib/actions/setup-pandoc@v1
-
-      - name: Install XQuartz on macOS
-        if: runner.os == 'macOS'
-        run: brew install xquartz --cask
 
       - name: Install packages
         run: Rscript -e 'install.packages(c("stringr", "tesseract", "magick", "data.table", "ggplot2", "rmarkdown"))'
