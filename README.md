@@ -24,8 +24,6 @@ and converts it into a simple csv.
     #> 5: 2022-11-01     1.900  2022-04-21
     #> 6: 2022-12-01     2.055  2022-04-21
 
-<img src="man/figures/README-graph-main-1.svg" width="100%" />
-
     #> Warning: Removed 1 rows containing missing values (geom_col).
 
 <img src="man/figures/README-graph-change-1.svg" width="100%" />
