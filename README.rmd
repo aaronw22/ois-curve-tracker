@@ -26,6 +26,9 @@ This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Impli
 ```{r graph-main, echo = FALSE, dev = 'svg'}
 all_data <- fread("combined-data/all_data.csv", colClasses = c("Date", "numeric", "Date"))
 
+print(str(all_data))
+head(all_data)
+
 # We can't graph all the days because it is far too messy now
 # So grab a weekly sequence of data
 past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
