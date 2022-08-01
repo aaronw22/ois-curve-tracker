@@ -24,7 +24,7 @@ This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Impli
 ## Implied yield curve
 
 ```{r graph-main, echo = FALSE, dev = 'svg'}
-all_data <- fread("combined-data/all_data.csv")
+all_data <- fread("combined-data/all_data.csv", colClasses = c("Date", "numeric", "Date"))
 
 # We can't graph all the days because it is far too messy now
 # So grab a weekly sequence of data
