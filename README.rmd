@@ -26,23 +26,20 @@ This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Impli
 ```{r graph-main, echo = FALSE, dev = 'svg'}
 all_data <- fread("combined-data/all_data.csv", colClasses = c("Date", "numeric", "Date"))
 
-print(str(all_data))
-head(all_data)
-
 # We can't graph all the days because it is far too messy now
 # So grab a weekly sequence of data
 past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
 
-# ggplot() +
-#   geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), size = 1, data = all_data[scrape_date %in% past_seq]) +
-#   geom_line(aes(x = date, y = cash_rate), colour = "black", size = 1.2, data = all_data[scrape_date == max(scrape_date)]) +
-#   labs(
-#     title = "Implied Cash Rate over Past 8 Weeks", 
-#     subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black"),
-#     x = "Date", y = "Implied cash rate (%)", colour = "Date") +
-#   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
-#   scale_colour_viridis_d(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
-#   theme_bw()
+ggplot() +
+  geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), size = 1, data = all_data[scrape_date %in% past_seq]) +
+  geom_line(aes(x = date, y = cash_rate), colour = "black", size = 1.2, data = all_data[scrape_date == max(scrape_date)]) +
+  labs(
+    title = "Implied Cash Rate over Past 8 Weeks",
+    subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black"),
+    x = "Date", y = "Implied cash rate (%)", colour = "Date") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_colour_viridis_d(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
+  theme_bw()
 
 ```
 
