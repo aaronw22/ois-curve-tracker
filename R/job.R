@@ -41,9 +41,12 @@ string_list <- lapply(strings, function(x) unlist(str_split(x, " ")))
 
 print(string_list)
 
+# Convert to dates, removing the ocassional invalid date that appears
+string_list[[1]] <- as.IDate(paste0("01-", string_list[[1]]), "%d-%b-%y")
+string_list[[1]] <- string_list[[1]][!is.na(string_list[[1]])]
+
 new_data <- as.data.frame(string_list, col.names = c("date", "cash_rate"))
-setDT(new_data)[, scrape_date := Sys.Date()]
-new_data[, date := as.IDate(paste0("01-", date), "%d-%b-%y")][, scrape_date := as.IDate(scrape_date)]
+setDT(new_data)[, scrape_date := as.IDate(Sys.Date())]
 
 # The decimal point is not always picked up; add it in
 # Note we are assuming all future cash rates are <10%
