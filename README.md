@@ -11,10 +11,10 @@ and converts it into a simple csv.
 Implied yield curve
 -------------------
 
-    #> Warning: Removed 2 row(s) containing missing values (geom_path).
+    #> Warning: Removed 1 row(s) containing missing values (geom_path).
 
 <img src="man/figures/README-graph-main-1.svg" width="100%" />
 
-    #> Warning: Removed 5 rows containing missing values (geom_col).
+    #> Warning: Removed 3 rows containing missing values (geom_col).
 
 <img src="man/figures/README-graph-change-1.svg" width="100%" />
