@@ -13,6 +13,6 @@ Implied yield curve
 
 <img src="man/figures/README-graph-main-1.svg" width="100%" />
 
-    #> Warning: Removed 2 rows containing missing values (geom_col).
+    #> Warning: Removed 1 rows containing missing values (geom_col).
 
 <img src="man/figures/README-graph-change-1.svg" width="100%" />
