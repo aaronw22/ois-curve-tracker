@@ -73,9 +73,10 @@ ggplot(change_data, aes(x = date, y = value, fill = variable)) +
 
 ```{r graph-peak, echo=FALSE, dev='svg', warning=FALSE}
 
-peak_data <- all_data[, .(date = date[cash_rate == max(cash_rate)], cash_rate = max(cash_rate)), by = .(scrape_date)]
+peak_data <- all_data[, .(date = date[cash_rate == max(cash_rate, na.rm = TRUE)], cash_rate = max(cash_rate, na.rm = TRUE)), by = .(scrape_date)]
 
 # Keep the first peak rate
+peak_data <- peak_data[complete.cases(peak_data)]
 peak_data <- unique(peak_data, by = "scrape_date")
 
 ggplot(peak_data, aes(x = scrape_date, y = cash_rate)) +
