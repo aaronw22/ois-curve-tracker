@@ -24,8 +24,8 @@ table_image <-
   magick::image_crop(full_image, geometry = geometry_area(
     width = 880 * 3.1,
     height = 38 * 3.1,
-    x_off = 185 * 3.1,
-    y_off = 635 * 3.1
+    x_off = 170 * 3.1,
+    y_off = 650 * 3.1
     ))
 table_image <- image_quantize(table_image, colorspace = "gray")
 table_image <- image_transparent(table_image, color = "white", fuzz = 55)
