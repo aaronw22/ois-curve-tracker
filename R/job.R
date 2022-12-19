@@ -25,7 +25,7 @@ table_image <-
     width = 880 * 3.1,
     height = 38 * 3.1,
     x_off = 170 * 3.1,
-    y_off = 630 * 3.1
+    y_off = 650 * 3.1
     ))
 table_image <- image_quantize(table_image, colorspace = "gray")
 table_image <- image_transparent(table_image, color = "white", fuzz = 55)
