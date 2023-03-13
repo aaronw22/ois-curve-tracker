@@ -83,14 +83,14 @@ ggplot(peak_data, aes(x = scrape_date, y = cash_rate)) +
   geom_line(colour = "#006d2c") +
   labs(title = "Implied Terminal Cash Rate",
        x = "Data scrape date", y = "Implied terminal cash rate (%)") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "1 months") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
   theme_bw()
 
 ggplot(peak_data, aes(x = scrape_date, y = date)) +
   geom_line(colour = "#08519c") +
   labs(title = "Implied Month Terminal Cash Rate Reached",
        x = "Data scrape date", y = NULL) +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "1 months") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
   scale_y_date(date_labels = "%b %y", date_breaks = "1 months") +
   theme_bw()
 
