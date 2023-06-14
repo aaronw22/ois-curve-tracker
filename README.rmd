@@ -105,6 +105,8 @@ ggplot(peak_data, aes(x = scrape_date, y = date)) +
 graph_data <- copy(all_data)
 graph_data[, peak_rate := max(cash_rate), by = scrape_date]
 graph_data[, below := cash_rate < peak_rate - 0.25]
+graph_data[, rising := cash_rate < shift(cash_rate, -1), by = scrape_date]
+graph_data[rising == TRUE, below := FALSE] # Stops the hiking cycle being picked up as a drop
 graph_data[, below := as.numeric(below)]
 graph_data[, below := cumsum(below), by = scrape_date]
 graph_data <- unique(graph_data[below == 1], by = c("scrape_date", "below"))
