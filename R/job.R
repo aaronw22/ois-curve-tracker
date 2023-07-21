@@ -7,7 +7,9 @@ library(RSelenium)
 # Set the timezone so files save with correct date
 Sys.setenv(TZ = "Australia/Sydney")
 
-rD <- rsDriver(browser = "chrome")
+binman::list_versions("chromedriver")
+
+rD <- rsDriver(browser = "chrome", chromever = "latest")
 
 # Assign the client to an object
 remDr <- rD[["client"]]
