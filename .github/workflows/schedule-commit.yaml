@@ -30,7 +30,7 @@ jobs:
         run: brew install xquartz --cask
 
       - name: Install packages
-        run: Rscript -e 'install.packages(c("stringr", "tesseract", "magick", "data.table", "ggplot2", "rmarkdown", "readrba"))'
+        run: Rscript -e 'install.packages(c("stringr", "rvest", "RSelenium", "data.table", "ggplot2", "rmarkdown", "readrba"))'
 
       - name: Run script
         run: Rscript -e 'source("R/job.R", echo = TRUE)'
