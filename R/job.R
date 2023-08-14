@@ -15,6 +15,7 @@ rD <- rsDriver(browser = "chrome", chromever = "latest")
 remDr <- rD[["client"]]
 
 remDr$navigate("https://www.asx.com.au/markets/trade-our-derivatives-market/derivatives-market-prices/short-term-derivatives")
+Sys.sleep(10)
 pg_source <- remDr$getPageSource()[[1]]
 
 cr_futures <-
