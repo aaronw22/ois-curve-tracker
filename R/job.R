@@ -1,31 +1,35 @@
 # Scrape ASX 30 Day Interbank Cash Rate Futures Implied Yield Target from website
-
 library(data.table)
-library(rvest)
-library(RSelenium)
+# library(rvest)
+# library(RSelenium)
+library(reticulate)
 
 # Set the timezone so files save with correct date
 Sys.setenv(TZ = "Australia/Sydney")
 
-binman::list_versions("chromedriver")
+# binman::list_versions("chromedriver")
+# 
+# rD <- rsDriver(browser = "chrome", chromever = "latest")
+# 
+# # Assign the client to an object
+# remDr <- rD[["client"]]
+# 
+# remDr$navigate("https://www.asx.com.au/markets/trade-our-derivatives-market/derivatives-market-prices/short-term-derivatives")
+# Sys.sleep(10)
+# pg_source <- remDr$getPageSource()[[1]]
+# 
+# cr_futures <-
+#   read_html(pg_source) |> 
+#   html_elements(xpath = "/html/body/div[1]/div/div[3]/div/div[1]/div/div/section/section/div[2]/div/div[4]/div[1]/table") |> 
+#   html_table()
 
-rD <- rsDriver(browser = "chrome", chromever = "latest")
+py <- py_run_file("R/scraper.py")
 
-# Assign the client to an object
-remDr <- rD[["client"]]
+cr_futures <- setDT(py$cr_futures)
 
-remDr$navigate("https://www.asx.com.au/markets/trade-our-derivatives-market/derivatives-market-prices/short-term-derivatives")
-Sys.sleep(10)
-pg_source <- remDr$getPageSource()[[1]]
-
-cr_futures <-
-  read_html(pg_source) |> 
-  html_elements(xpath = "/html/body/div[1]/div/div[3]/div/div[1]/div/div/section/section/div[2]/div/div[4]/div[1]/table") |> 
-  html_table()
-
-cr_futures <- setDT(cr_futures[[1]])
-
-setnames(cr_futures, c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), c("date", "cash_rate", "scrape_date"))
+setnames(cr_futures, 
+         c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), 
+         c("date", "cash_rate", "scrape_date"))
 
 cr_futures <- cr_futures[, .(date, cash_rate, scrape_date)]
 
