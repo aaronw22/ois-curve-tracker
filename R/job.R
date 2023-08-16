@@ -23,7 +23,7 @@ Sys.setenv(TZ = "Australia/Sydney")
 #   html_elements(xpath = "/html/body/div[1]/div/div[3]/div/div[1]/div/div/section/section/div[2]/div/div[4]/div[1]/table") |> 
 #   html_table()
 
-py_install(c("selenium", "webdriver_manager", "pandas", "bs4", "os", "lxml"))
+py_install(c("selenium", "webdriver_manager", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
 
 cr_futures <- setDT(py$cr_futures)
