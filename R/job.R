@@ -1,27 +1,9 @@
 # Scrape ASX 30 Day Interbank Cash Rate Futures Implied Yield Target from website
 library(data.table)
-# library(rvest)
-# library(RSelenium)
 library(reticulate)
 
 # Set the timezone so files save with correct date
 Sys.setenv(TZ = "Australia/Sydney")
-
-# binman::list_versions("chromedriver")
-# 
-# rD <- rsDriver(browser = "chrome", chromever = "latest")
-# 
-# # Assign the client to an object
-# remDr <- rD[["client"]]
-# 
-# remDr$navigate("https://www.asx.com.au/markets/trade-our-derivatives-market/derivatives-market-prices/short-term-derivatives")
-# Sys.sleep(10)
-# pg_source <- remDr$getPageSource()[[1]]
-# 
-# cr_futures <-
-#   read_html(pg_source) |> 
-#   html_elements(xpath = "/html/body/div[1]/div/div[3]/div/div[1]/div/div/section/section/div[2]/div/div[4]/div[1]/table") |> 
-#   html_table()
 
 py_install(c("selenium", "webdriver_manager", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
