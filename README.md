@@ -4,7 +4,7 @@
 
 This repo automatically scrapes the ASX 30 Day Interbank Cash Rate
 Futures Implied Yield Curve from
-[here](https://www.asx.com.au/data/trt/ib_expectation_curve_graph.pdf)
+[here](https://www.asx.com.au/markets/trade-our-derivatives-market/derivatives-market-prices/short-term-derivatives)
 and converts it into a simple csv.
 
 ## Implied yield curve
