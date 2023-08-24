@@ -16,6 +16,15 @@ knitr::opts_chunk$set(
 library(data.table)
 library(ggplot2)
 library(readrba)
+
+rounder <- function(value, round) {
+  sign <- sign(value)
+  mag <- abs(value)
+  out <- ceiling(mag / round) * round * sign
+  
+  return(out)
+}
+
 ```
 
 # ASX Implied Cash Rate
@@ -38,6 +47,11 @@ ocr <- ocr[date == max(date), value]
 # So grab a weekly sequence of data
 past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
 
+# Custom breaks so they appear in increments of the cash rate
+cust_breaks <- function(vec) {
+  seq(rounder(range(vec)[1], 0.25), rounder(range(vec)[2], 0.25) + 0.25, 0.25) - 0.15
+}
+
 ggplot() +
   geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), size = 1, data = all_data[scrape_date %in% past_seq]) +
   geom_line(aes(x = date, y = cash_rate), colour = "black", size = 1.2, data = all_data[scrape_date == max(scrape_date)]) +
@@ -47,6 +61,7 @@ ggplot() +
     subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black, dotted line = current OCR"),
     x = "Date", y = "Implied cash rate (%)", colour = "Date") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_y_continuous(breaks = function(vec) cust_breaks(vec)) +
   scale_colour_viridis_d(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
   theme_bw()
 
@@ -138,7 +153,10 @@ ggplot(graph_data, aes(x = scrape_date, y = change)) +
   labs(title = "Implied Cash Rate Cuts by End of Data Period",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_continuous(sec.axis = sec_axis(trans = ~ . / -0.25, name = "Number of 0.25ppt cuts")) +
+  scale_y_continuous(
+    breaks = function(x) seq(rounder(range(x)[1], 0.25), rounder(range(x)[2], 0.25), by = 0.25),
+    sec.axis = sec_axis(trans = ~ . / -0.25, name = "Number of 0.25ppt cuts")
+    ) +
   theme_bw()
 
 
