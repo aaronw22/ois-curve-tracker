@@ -1,13 +1,14 @@
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.chrome import ChromeType
+# from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeType
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 import pandas as pd
 from bs4 import BeautifulSoup
 import lxml
 
-chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+chrome_service = Service()
+# chrome_service = Service(ChromeDriverManager(chrome_type = ChromeType.CHROMIUM).install())
 
 chrome_options = Options()
 options = [
@@ -23,7 +24,6 @@ for option in options:
   chrome_options.add_argument(option)
 
 driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
-# driver.implicitly_wait(0) # seconds
 
 # Run this in a loop until the table loads because sometimes it doesn't
 not_empty = False
@@ -60,3 +60,5 @@ while not_empty == False:
   # Terminate the loop if it runs too many times
   if i > 100:
     not_empty = True
+
+driver.quit()
