@@ -7,7 +7,7 @@ library(reticulate)
 # Set the timezone so files save with correct date
 Sys.setenv(TZ = "Australia/Sydney")
 
-py_install(c("selenium", "webdriver_manager", "pandas", "bs4", "lxml"))
+py_install(c("selenium", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
 
 cr_futures <- setDT(py$cr_futures)
