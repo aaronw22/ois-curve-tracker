@@ -48,8 +48,6 @@ ocr <- ocr[date == max(date), value]
 
 ```{r graph-main, echo=FALSE, dev='svg', warning=FALSE}
 
-# We can't graph all the days because it is far too messy now
-# So grab a weekly sequence of data
 past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
 
 ggplot() +
@@ -57,11 +55,11 @@ ggplot() +
   geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), linewidth = 1, data = all_data[scrape_date %in% past_seq]) +
   geom_line(aes(x = date, y = cash_rate), colour = "black", linewidth = 1.2, data = all_data[scrape_date == max(scrape_date)]) +
   labs(
-    title = "Implied Cash Rate over Past 8 Weeks",
+    title = "Implied Cash Rate (%) over Past 8 Weeks",
     subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black, solid line = current OCR"),
-    x = "Date", y = "Implied cash rate (%)", colour = "Date") +
+    x = NULL, y = NULL, colour = "Date") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
-  scale_y_continuous(breaks = function(vec) cust_breaks(vec)) +
+  scale_y_continuous(breaks = function(vec) cust_breaks(vec), sec.axis = dup_axis()) +
   scale_colour_viridis_d(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
   theme_bw()
 
@@ -80,12 +78,13 @@ change_data[, today := NULL]
 change_data <- melt(change_data, id.vars = "date")
 change_data[, variable := ordered(variable, c("1 day ago", "1 week ago", "4 weeks ago"))]
 
-ggplot(change_data, aes(x = date, y = value, fill = variable)) +
+ggplot(change_data, aes(x = date, y = value * 100, fill = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_col(position = "dodge") +
-  labs(title = "Change in Implied Cash Rate",
-       x = "Date", y = "Change in implied cash rate (ppt)") +
+  labs(title = "Change in Implied Cash Rate (bps)",
+       x = NULL, y = NULL, fill = "Relative to:") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_y_continuous(sec.axis = dup_axis()) +
   theme_bw()
 
 ```
@@ -101,11 +100,11 @@ peak_data <- unique(peak_data, by = "scrape_date")
 ggplot(peak_data, aes(x = scrape_date, y = cash_rate)) +
   geom_hline(yintercept = ocr, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line(colour = "#006d2c") +
-  labs(title = "Implied Terminal Cash Rate",
+  labs(title = "Implied Terminal Cash Rate (%)",
        subtitle = "Solid line = current OCR",
-       x = "Data scrape date", y = "Implied terminal cash rate (%)") +
+       x = "Data scrape date", y = NULL) +
   scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_continuous(breaks = function(vec) cust_breaks(vec)) +
+  scale_y_continuous(breaks = function(vec) cust_breaks(vec), sec.axis = dup_axis()) +
   theme_bw()
 
 ggplot(peak_data, aes(x = scrape_date, y = date)) +
@@ -113,7 +112,7 @@ ggplot(peak_data, aes(x = scrape_date, y = date)) +
   labs(title = "Implied Month Terminal Cash Rate Reached",
        x = "Data scrape date", y = NULL) +
   scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_date(date_labels = "%b %y", date_breaks = "1 months") +
+  scale_y_date(date_labels = "%b %y", date_breaks = "1 months", sec.axis = dup_axis()) +
   theme_bw()
 
 ```
@@ -136,7 +135,7 @@ ggplot(graph_data, aes(x = scrape_date, y = date)) +
   labs(title = "Implied Month of First Cash Rate Cut",
        x = "Data scrape date", y = NULL) +
   scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL) +
+  scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL, sec.axis = dup_axis()) +
   theme_bw()
 
 ```
