@@ -89,6 +89,8 @@ ggplot(change_data, aes(x = date, y = value * 100, fill = variable)) +
 
 ```
 
+<!-- Terminal CR graphs are no longer very relevant given likely CR peak -->
+<!---
 ```{r graph-peak, echo=FALSE, dev='svg', warning=FALSE}
 
 peak_data <- all_data[, .(date = date[cash_rate == max(cash_rate, na.rm = TRUE)], cash_rate = max(cash_rate, na.rm = TRUE)), by = .(scrape_date)]
@@ -116,6 +118,7 @@ ggplot(peak_data, aes(x = scrape_date, y = date)) +
   theme_bw()
 
 ```
+--->
 
 ```{r graph-first-cut, echo=FALSE, dev='svg', warning=FALSE}
 graph_data <- copy(all_data)
