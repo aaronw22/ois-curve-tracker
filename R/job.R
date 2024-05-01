@@ -25,6 +25,7 @@ cr_futures[, date := as.IDate(paste0("01 ", date), format = "%d %b %y")]
 cr_futures[, scrape_date := as.IDate(scrape_date, format = "%d/%m/%y")]
 cr_futures[, cash_rate := 100 - as.numeric(cash_rate)]
 cr_futures[, cash_rate := round(cash_rate, 2)]
+cr_futures <- cr_futures[!is.na(cash_rate)]
 
 # Write a CSV of today's data
 fwrite(cr_futures, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
