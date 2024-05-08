@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.service import Service
 import pandas as pd
 from bs4 import BeautifulSoup
 import lxml
+from io import StringIO
 
 chrome_options = Options()
 options = [
@@ -46,7 +47,7 @@ while not_empty == False:
   
   if type(table).__name__ != "NoneType":
     # Read the table data into a pandas DataFrame
-    cr_futures = pd.read_html(str(table))[0]
+    cr_futures = pd.read_html(StringIO(str(table)))[0]
   
   # Terminate the loop if we get a table with data in it
   if cr_futures.index.size > 0:
