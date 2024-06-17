@@ -11,23 +11,24 @@ py_install(c("selenium", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
 
 # cr_futures <- setDT(py$cr_futures)
-cr_futures <- as.data.table(py$cr_futures)
+cr_futures <- as.list(py$cr_futures)
+cr_futures <- as.data.table(cr_futures)
 
 class(cr_futures)
 str(cr_futures)
-print(cr_futures)
+head(cr_futures, 1)
 
 setnames(cr_futures, 
          c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), 
          c("date", "cash_rate", "scrape_date"))
 
 str(cr_futures)
-print(cr_futures)
+head(cr_futures, 1)
 
 cr_futures <- cr_futures[, .(date, cash_rate, scrape_date)]
 
 str(cr_futures)
-print(cr_futures)
+head(cr_futures, 1)
 
 cr_futures[, cash_rate := gsub("^(.*)As of \\d+/\\d+/\\d+", "\\1", cash_rate)]
 cr_futures[, cash_rate := trimws(cash_rate)]
