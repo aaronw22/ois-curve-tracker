@@ -10,8 +10,12 @@ Sys.setenv(TZ = "Australia/Sydney")
 py_install(c("selenium", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
 
+class(py$cr_futures)
+print(py$cr_futures)
+
 cr_futures <- setDT(py$cr_futures)
 
+class(cr_futures)
 print(cr_futures)
 str(cr_futures)
 
