@@ -12,9 +12,15 @@ py <- py_run_file("R/scraper.py")
 
 cr_futures <- setDT(py$cr_futures)
 
+print(cr_futures)
+str(cr_futures)
+
 setnames(cr_futures, 
          c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), 
          c("date", "cash_rate", "scrape_date"))
+
+print(cr_futures)
+str(cr_futures)
 
 cr_futures <- cr_futures[, .(date, cash_rate, scrape_date)]
 
