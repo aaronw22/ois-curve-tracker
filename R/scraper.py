@@ -58,3 +58,19 @@ while not_empty == False:
     not_empty = True
 
 driver.quit()
+
+# Keep only useful columns
+cr_futures = cr_futures[['Expiry Date', 'Previous Settlement', 'Previous Settlement Time']]
+
+# Rename columns
+cr_futures = cr_futures.rename(columns={'Expiry Date': 'date', 'Previous Settlement': 'cash_rate', 'Previous Settlement Time': 'scrape_date'})
+
+# Clean up the data
+cr_futures['cash_rate'] = cr_futures['cash_rate'].str.replace(r'^(.*)As of \d+/\d+/\d+', r'\1', regex=True).str.strip()
+cr_futures['scrape_date'] = cr_futures['scrape_date'].str.replace(r'As of (\d+/\d+/\d+)', r'\1', regex=True)
+cr_futures['date'] = pd.to_datetime(cr_futures['date'].apply(lambda x: f"01 {x}"), format="%d %b %y")
+cr_futures['scrape_date'] = pd.to_datetime(cr_futures['scrape_date'], format="%d/%m/%y")
+cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'])
+cr_futures['cash_rate'] = cr_futures['cash_rate'].round(2)
+cr_futures = cr_futures.dropna(subset=['cash_rate'])
+
