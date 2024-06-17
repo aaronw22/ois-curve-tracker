@@ -5,6 +5,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import lxml
 from io import StringIO
+import os
+from datetime import datetime
 
 chrome_options = Options()
 options = [
@@ -74,3 +76,15 @@ cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'])
 cr_futures['cash_rate'] = cr_futures['cash_rate'].round(2)
 cr_futures = cr_futures.dropna(subset=['cash_rate'])
 
+## Save to file
+
+# Get today's date in YYYY-MM-DD format
+today_date = datetime.today().strftime('%Y-%m-%d')
+
+# Create file paths
+daily_data_path = os.path.join("daily-data", f"scraped_cash_rate_{today_date}.csv")
+latest_data_path = os.path.join("latest-data", "scraped_cash_rate_latest.csv")
+
+# Write the DataFrame to CSV files
+cr_futures.to_csv(daily_data_path, index=False)
+cr_futures.to_csv(latest_data_path, index=False)

@@ -10,13 +10,13 @@ Sys.setenv(TZ = "Australia/Sydney")
 py_install(c("selenium", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
 
-cr_futures <- setDT(py$cr_futures)
+# cr_futures <- setDT(py$cr_futures)
 # cr_futures <- as.list(py$cr_futures)
 # cr_futures <- as.data.table(cr_futures)
 
-class(cr_futures)
-str(cr_futures)
-head(cr_futures, 1)
+# class(cr_futures)
+# str(cr_futures)
+# head(cr_futures, 1)
 
 # setnames(cr_futures, 
 #          c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), 
@@ -33,11 +33,12 @@ head(cr_futures, 1)
 # cr_futures[, cash_rate := round(cash_rate, 2)]
 # cr_futures <- cr_futures[!is.na(cash_rate)]
 
-# Write a CSV of today's data
-fwrite(cr_futures, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
-fwrite(cr_futures, file.path("latest-data", paste0("scraped_cash_rate_latest.csv")))
+# # Write a CSV of today's data
+# fwrite(cr_futures, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
+# fwrite(cr_futures, file.path("latest-data", paste0("scraped_cash_rate_latest.csv")))
 
 # Load existing data, combine with latest data
+cr_futures <- fread(file.path("latest-data", "scraped_cash_rate_latest.csv"))
 all_data <- fread(file.path("combined-data", "all_data.csv"))
 all_data <- rbindlist(list(all_data, cr_futures))
 
