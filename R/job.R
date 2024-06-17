@@ -18,6 +18,9 @@ setnames(cr_futures,
 
 cr_futures <- cr_futures[, .(date, cash_rate, scrape_date)]
 
+print(cr_futures)
+str(cr_futures)
+
 cr_futures[, cash_rate := gsub("^(.*)As of \\d+/\\d+/\\d+", "\\1", cash_rate)]
 cr_futures[, cash_rate := trimws(cash_rate)]
 cr_futures[, scrape_date := gsub("As of (\\d+/\\d+/\\d+)", "\\1", scrape_date)]
