@@ -7,35 +7,9 @@ library(reticulate)
 # Set the timezone so files save with correct date
 Sys.setenv(TZ = "Australia/Sydney")
 
+# Run Python script to scrape the data and save results to csv
 py_install(c("selenium", "pandas", "bs4", "lxml"))
 py <- py_run_file("R/scraper.py")
-
-# cr_futures <- setDT(py$cr_futures)
-# cr_futures <- as.list(py$cr_futures)
-# cr_futures <- as.data.table(cr_futures)
-
-# class(cr_futures)
-# str(cr_futures)
-# head(cr_futures, 1)
-
-# setnames(cr_futures, 
-#          c("Expiry Date", "Previous Settlement", "Previous Settlement Time"), 
-#          c("date", "cash_rate", "scrape_date"))
-# 
-# cr_futures <- cr_futures[, .(date, cash_rate, scrape_date)]
-
-# cr_futures[, cash_rate := gsub("^(.*)As of \\d+/\\d+/\\d+", "\\1", cash_rate)]
-# cr_futures[, cash_rate := trimws(cash_rate)]
-# cr_futures[, scrape_date := gsub("As of (\\d+/\\d+/\\d+)", "\\1", scrape_date)]
-# cr_futures[, date := as.IDate(paste0("01 ", date), format = "%d %b %y")]
-# cr_futures[, scrape_date := as.IDate(scrape_date, format = "%d/%m/%y")]
-# cr_futures[, cash_rate := 100 - as.numeric(cash_rate)]
-# cr_futures[, cash_rate := round(cash_rate, 2)]
-# cr_futures <- cr_futures[!is.na(cash_rate)]
-
-# # Write a CSV of today's data
-# fwrite(cr_futures, file.path("daily-data", paste0("scraped_cash_rate_", Sys.Date(), ".csv")))
-# fwrite(cr_futures, file.path("latest-data", paste0("scraped_cash_rate_latest.csv")))
 
 # Load existing data, combine with latest data
 cr_futures <- fread(file.path("latest-data", "scraped_cash_rate_latest.csv"))

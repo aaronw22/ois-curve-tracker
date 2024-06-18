@@ -67,13 +67,23 @@ cr_futures = cr_futures[['Expiry Date', 'Previous Settlement', 'Previous Settlem
 # Rename columns
 cr_futures = cr_futures.rename(columns={'Expiry Date': 'date', 'Previous Settlement': 'cash_rate', 'Previous Settlement Time': 'scrape_date'})
 
-# Clean up the data
+## Clean up the data
+
+# Extract cash rate numeric
 cr_futures['cash_rate'] = cr_futures['cash_rate'].str.replace(r'^(.*)As of \d+/\d+/\d+', r'\1', regex=True).str.strip()
+
+# Extract data scrape date
 cr_futures['scrape_date'] = cr_futures['scrape_date'].str.replace(r'As of (\d+/\d+/\d+)', r'\1', regex=True)
+
+# Convert month/year to full date format
 cr_futures['date'] = pd.to_datetime(cr_futures['date'].apply(lambda x: f"01 {x}"), format="%d %b %y")
+
+# Misc value conversions
 cr_futures['scrape_date'] = pd.to_datetime(cr_futures['scrape_date'], format="%d/%m/%y")
 cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'])
 cr_futures['cash_rate'] = cr_futures['cash_rate'].round(2)
+
+# Drop rows with missing cash rate values
 cr_futures = cr_futures.dropna(subset=['cash_rate'])
 
 ## Save to file
