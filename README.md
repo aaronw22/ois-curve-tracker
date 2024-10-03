@@ -9,6 +9,9 @@ and converts it into a simple csv.
 
 ## Implied yield curve
 
+    #> `geom_line()`: Each group consists of only one observation.
+    #> ℹ Do you need to adjust the group aesthetic?
+
 <img src="man/figures/README-graph-main-1.svg" width="100%" />
 
 <img src="man/figures/README-graph-change-1.svg" width="100%" />
