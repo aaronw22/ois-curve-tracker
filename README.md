@@ -21,6 +21,9 @@ and converts it into a simple csv.
 <img src="man/figures/README-graph-peak-1.svg" width="100%" /><img src="man/figures/README-graph-peak-2.svg" width="100%" />
 --->
 
+    #> `geom_line()`: Each group consists of only one observation.
+    #> ℹ Do you need to adjust the group aesthetic?
+
 <img src="man/figures/README-graph-first-cut-1.svg" width="100%" />
 
 <img src="man/figures/README-graph-total-cuts-1.svg" width="100%" />
