@@ -71,22 +71,27 @@ ggplot() +
 change_data <- all_data[scrape_date %in% c(max(scrape_date), max(scrape_date) - 1, max(scrape_date) - 7, max(scrape_date) - 28)]
 
 change_data <- dcast(change_data, date ~ scrape_date, value.var = "cash_rate")
-setnames(change_data, new = c("date", "4 weeks ago", "1 week ago", "1 day ago", "today"))
-cols <- c("4 weeks ago", "1 week ago", "1 day ago")
-change_data[, (cols) := lapply(.SD, function(x) today - x), .SDcols = cols]
-change_data[, today := NULL]
-change_data <- melt(change_data, id.vars = "date")
-change_data[, variable := ordered(variable, c("1 day ago", "1 week ago", "4 weeks ago"))]
 
-ggplot(change_data, aes(x = date, y = value * 100, fill = variable)) +
-  geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
-  geom_col(position = "dodge") +
-  labs(title = "Change in Implied Cash Rate (bps)",
-       x = NULL, y = NULL, fill = "Relative to:") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
-  scale_y_continuous(sec.axis = dup_axis()) +
-  theme_bw()
+if (length(names(change_data)) == 5) {
+  setnames(change_data, new = c("date", "4 weeks ago", "1 week ago", "1 day ago", "today"))
+  
+  col_class <- sapply(change_data, class)
+  cols <- names(col_class)[col_class == "numeric"]
+  change_data[, (cols) := lapply(.SD, function(x) today - x), .SDcols = cols]
+  change_data[, today := NULL]
+  change_data <- melt(change_data, id.vars = "date")
+  change_data[, variable := ordered(variable, c("1 day ago", "1 week ago", "4 weeks ago"))]
+  
+  ggplot(change_data, aes(x = date, y = value * 100, fill = variable)) +
+    geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
+    geom_col(position = "dodge") +
+    labs(title = "Change in Implied Cash Rate (bps)",
+         x = NULL, y = NULL, fill = "Relative to:") +
+    scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+    scale_y_continuous(sec.axis = dup_axis()) +
+    theme_bw()
 
+}
 ```
 
 <!-- Terminal CR graphs are no longer very relevant given likely CR peak -->
