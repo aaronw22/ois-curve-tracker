@@ -11,8 +11,6 @@ and converts it into a simple csv.
 
 <img src="man/figures/README-graph-main-1.svg" width="100%" />
 
-<img src="man/figures/README-graph-change-1.svg" width="100%" />
-
 <!-- Terminal CR graphs are no longer very relevant given likely CR peak -->
 <!---
 <img src="man/figures/README-graph-peak-1.svg" width="100%" /><img src="man/figures/README-graph-peak-2.svg" width="100%" />
