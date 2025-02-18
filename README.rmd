@@ -129,21 +129,37 @@ ggplot(graph_data, aes(x = scrape_date, y = date)) +
 
 graph_data <- copy(all_data)
 graph_data <- graph_data[!is.na(cash_rate)]
-graph_data <- 
-  graph_data[, .(peak_rate = max(cash_rate), end_rate = cash_rate[date == max(date)]), by = scrape_date]
-graph_data[, change := end_rate - peak_rate]
 
-ggplot(graph_data, aes(x = scrape_date, y = change)) +
+graph_data <- 
+  graph_data[, .(rate_end = cash_rate[date == max(date)],
+                 rate_6m = cash_rate[date == floor_date(scrape_date, "month") %m+% months(6)],
+                 rate_1y = cash_rate[date == floor_date(scrape_date, "month") %m+% years(1)],
+                 peak_rate = max(cash_rate)
+                 ),
+             by = scrape_date]
+graph_data[, let(rate_end = rate_end - peak_rate,
+                 rate_6m = rate_6m - peak_rate,
+                 rate_1y = rate_1y - peak_rate)]
+
+graph_data <- melt(graph_data, measure.vars = c("rate_end", "rate_6m", "rate_1y"))
+graph_data[, variable := ordered(variable, 
+                                c("rate_6m", "rate_1y", "rate_end"), 
+                                c("6 months ahead", "1 year ahead", "End period"))]
+
+ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
-  geom_line(colour = "#006d2c") +
-  labs(title = "Implied Cash Rate Cuts by End of Data Period",
+  geom_line() +
+  labs(title = "Implied cash rate cuts by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "6 months", date_minor_breaks = "1 month") +
   scale_y_continuous(
     breaks = function(x) seq(rounder(range(x)[1], 0.25), rounder(range(x)[2], 0.25), by = 0.25),
     sec.axis = sec_axis(trans = ~ . / -0.25, name = "Number of 0.25ppt cuts")
     ) +
-  theme_bw()
+  scale_colour_viridis_d() +
+  theme_bw() + 
+  theme(legend.position = "top",
+        legend.title = element_blank()) 
 
 
 ```
