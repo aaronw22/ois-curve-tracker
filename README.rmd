@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 library(data.table)
 library(ggplot2)
 library(readrba)
+library(lubridate)
 
 rounder <- function(value, round) {
   sign <- sign(value)
@@ -48,15 +49,17 @@ ocr <- ocr[date == max(date), value]
 
 ```{r graph-main, echo=FALSE, dev='svg', warning=FALSE}
 
-past_seq <- seq.Date(max(all_data$scrape_date) - 7*8, max(all_data$scrape_date) - 1, by = "1 week")
+graph_data <- all_data[date >= floor_date(Sys.Date(), "month")]
+
+past_seq <- seq.Date(max(graph_data$scrape_date) - 7*8, max(graph_data$scrape_date) - 1, by = "1 week")
 
 ggplot() +
   geom_hline(yintercept = ocr, colour = "black", linewidth = 0.5, linetype = "solid") +
-  geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), linewidth = 1, data = all_data[scrape_date %in% past_seq]) +
-  geom_line(aes(x = date, y = cash_rate), colour = "black", linewidth = 1.2, data = all_data[scrape_date == max(scrape_date)]) +
+  geom_line(aes(x = date, y = cash_rate, colour = factor(scrape_date)), linewidth = 1, data = graph_data[scrape_date %in% past_seq]) +
+  geom_line(aes(x = date, y = cash_rate), colour = "black", linewidth = 1.2, data = graph_data[scrape_date == max(scrape_date)]) +
   labs(
-    title = "Implied Cash Rate (%) over Past 8 Weeks",
-    subtitle = paste0(format(max(all_data$scrape_date), "%d %b %Y"), " in bolded black, solid line = current OCR"),
+    title = "Implied cash rate over past 8 weeks",
+    subtitle = paste0(format(max(graph_data$scrape_date), "%d %b %Y"), " in bolded black, solid line = current OCR"),
     x = NULL, y = NULL, colour = "Date") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
   scale_y_continuous(breaks = function(vec) cust_breaks(vec), sec.axis = dup_axis()) +
@@ -68,7 +71,8 @@ ggplot() +
 ```{r graph-change, echo=FALSE, dev='svg', warning=FALSE}
 # Graph the change in the implied cash rate between the past 2 days, past week and past 4 weeks
 
-change_data <- all_data[scrape_date %in% c(max(scrape_date), max(scrape_date) - 1, max(scrape_date) - 7, max(scrape_date) - 28)]
+change_data <- all_data[date >= floor_date(Sys.Date(), "month")]
+change_data <- change_data[scrape_date %in% c(max(scrape_date), max(scrape_date) - 1, max(scrape_date) - 7, max(scrape_date) - 28)]
 
 change_data <- dcast(change_data, date ~ scrape_date, value.var = "cash_rate")
 
@@ -85,7 +89,7 @@ if (length(names(change_data)) == 5) {
   ggplot(change_data, aes(x = date, y = value * 100, fill = variable)) +
     geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
     geom_col(position = "dodge") +
-    labs(title = "Change in Implied Cash Rate (bps)",
+    labs(title = "Change in implied cash rate (bps)",
          x = NULL, y = NULL, fill = "Relative to:") +
     scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
     scale_y_continuous(sec.axis = dup_axis()) +
@@ -94,7 +98,7 @@ if (length(names(change_data)) == 5) {
 }
 ```
 
-```{r graph-first-cut, echo=FALSE, dev='svg', warning=FALSE}
+```{r graph-next-cut, echo=FALSE, dev='svg', warning=FALSE}
 graph_data <- copy(all_data)
 graph_data[, peak_rate := max(cash_rate), by = scrape_date]
 graph_data[, below := cash_rate < peak_rate - 0.25]
@@ -107,9 +111,12 @@ graph_data <- unique(graph_data[below == 1], by = c("scrape_date", "below"))
 # Data prior to Feb 23 is a bit funky because it was still peak hiking cycle
 graph_data <- graph_data[scrape_date > "2023-02-01"]
 
+# Keep predictions that are in the future only
+graph_data <- graph_data[date >= floor_date(Sys.Date(), "month")]
+
 ggplot(graph_data, aes(x = scrape_date, y = date)) +
   geom_line(colour = "#08519c") +
-  labs(title = "Implied Month of First Cash Rate Cut",
+  labs(title = "Implied month of next cash rate cut",
        x = "Data scrape date", y = NULL) +
   scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
   scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL, sec.axis = dup_axis()) +
