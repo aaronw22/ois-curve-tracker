@@ -94,37 +94,6 @@ if (length(names(change_data)) == 5) {
 }
 ```
 
-<!-- Terminal CR graphs are no longer very relevant given likely CR peak -->
-<!---
-```{r graph-peak, echo=FALSE, dev='svg', warning=FALSE}
-
-peak_data <- all_data[, .(date = date[cash_rate == max(cash_rate, na.rm = TRUE)], cash_rate = max(cash_rate, na.rm = TRUE)), by = .(scrape_date)]
-
-# Keep the first peak rate
-peak_data <- peak_data[complete.cases(peak_data)]
-peak_data <- unique(peak_data, by = "scrape_date")
-
-ggplot(peak_data, aes(x = scrape_date, y = cash_rate)) +
-  geom_hline(yintercept = ocr, colour = "black", linewidth = 0.5, linetype = "solid") +
-  geom_line(colour = "#006d2c") +
-  labs(title = "Implied Terminal Cash Rate (%)",
-       subtitle = "Solid line = current OCR",
-       x = "Data scrape date", y = NULL) +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_continuous(breaks = function(vec) cust_breaks(vec), sec.axis = dup_axis()) +
-  theme_bw()
-
-ggplot(peak_data, aes(x = scrape_date, y = date)) +
-  geom_line(colour = "#08519c") +
-  labs(title = "Implied Month Terminal Cash Rate Reached",
-       x = "Data scrape date", y = NULL) +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_date(date_labels = "%b %y", date_breaks = "1 months", sec.axis = dup_axis()) +
-  theme_bw()
-
-```
---->
-
 ```{r graph-first-cut, echo=FALSE, dev='svg', warning=FALSE}
 graph_data <- copy(all_data)
 graph_data[, peak_rate := max(cash_rate), by = scrape_date]
