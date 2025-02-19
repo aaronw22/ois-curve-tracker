@@ -61,7 +61,7 @@ ggplot() +
     title = "Implied cash rate over past 8 weeks",
     subtitle = paste0(format(max(graph_data$scrape_date), "%d %b %Y"), " in bolded black, solid line = current OCR"),
     x = NULL, y = NULL, colour = "Date") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_x_date(date_labels = "%b", date_breaks = "1 months", date_minor_breaks = "1 month") +
   scale_y_continuous(breaks = function(vec) cust_breaks(vec), sec.axis = dup_axis()) +
   scale_colour_viridis_d(labels = function(x) format(as.Date(x), "%d %b"), guide = guide_legend(reverse = TRUE)) +
   theme_bw()
