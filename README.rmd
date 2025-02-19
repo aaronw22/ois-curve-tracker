@@ -146,6 +146,9 @@ graph_data[, variable := ordered(variable,
                                 c("rate_6m", "rate_1y", "rate_end"), 
                                 c("6 months ahead", "1 year ahead", "End period"))]
 
+# Show past year only
+graph_data <- graph_data[scrape_date > Sys.Date() %m-% years(1)]
+
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line() +
