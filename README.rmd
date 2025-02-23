@@ -154,7 +154,7 @@ ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_line() +
   labs(title = "Implied cash rate cuts by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "6 months", date_minor_breaks = "1 month") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
   scale_y_continuous(
     breaks = function(x) seq(rounder(range(x)[1], 0.25), rounder(range(x)[2], 0.25), by = 0.25),
     sec.axis = sec_axis(trans = ~ . / -0.25, name = "Number of 0.25ppt cuts")
