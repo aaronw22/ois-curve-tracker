@@ -42,8 +42,8 @@ This repo automatically scrapes the ASX 30 Day Interbank Cash Rate Futures Impli
 ```{r load-data, include=FALSE}
 all_data <- fread("combined-data/all_data.csv", colClasses = c("Date", "numeric", "Date"))
 
-ocr <- setDT(read_rba_seriesid("ARBAMPCNCRT"))
-ocr <- ocr[date == max(date), value]
+ocr_ts <- setDT(read_rba_seriesid("FIRMMCRTD"))
+ocr <- ocr_ts[date == max(date), value]
 
 ```
 
