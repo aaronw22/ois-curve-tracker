@@ -100,8 +100,9 @@ if (length(names(change_data)) == 5) {
 
 ```{r graph-next-cut, echo=FALSE, dev='svg', warning=FALSE}
 graph_data <- copy(all_data)
-graph_data[, peak_rate := max(cash_rate), by = scrape_date]
-graph_data[, below := cash_rate < peak_rate - 0.25]
+graph_data <- graph_data[date >= scrape_date %m-% months(1)] # only future values should exist?
+graph_data[ocr_ts, on = .(scrape_date >= date), actual_ocr := value]
+graph_data[, below := cash_rate < actual_ocr - 0.25]
 graph_data[, rising := cash_rate < shift(cash_rate, -1), by = scrape_date]
 graph_data[rising == TRUE, below := FALSE] # Stops the hiking cycle being picked up as a drop
 graph_data[, below := as.numeric(below)]
