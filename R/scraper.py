@@ -78,13 +78,11 @@ cr_futures['scrape_date'] = cr_futures['scrape_date'].str.replace(r'As of (\d+/\
 # Convert month/year to full date format
 cr_futures['date'] = pd.to_datetime(cr_futures['date'].apply(lambda x: f"01 {x}"), format="%d %b %y")
 
-# Misc value conversions
-cr_futures['scrape_date'] = pd.to_datetime(cr_futures['scrape_date'], format="%d/%m/%y")
-cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'])
+# Drop NA rows and convert columns to appropriate types
+cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'], errors = "coerce")
 cr_futures['cash_rate'] = cr_futures['cash_rate'].round(2)
-
-# Drop rows with missing cash rate values
-cr_futures = cr_futures.dropna(subset=['cash_rate'])
+cr_futures = cr_futures[cr_futures['cash_rate'].notna()]
+cr_futures['scrape_date'] = pd.to_datetime(cr_futures['scrape_date'], format="%d/%m/%y")
 
 ## Save to file
 
