@@ -1,5 +1,5 @@
 # Scrape ASX 30 Day Interbank Cash Rate Futures Implied Yield Target from website
-install.packages(c("reticulate", "data.table", "ggplot2", "rmarkdown", "readrba"))
+install.packages(c("reticulate", "data.table", "ggplot2", "rmarkdown", "readrba", "ggrepel"))
 
 library(data.table)
 library(reticulate)
