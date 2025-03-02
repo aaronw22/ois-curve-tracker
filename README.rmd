@@ -17,6 +17,7 @@ library(data.table)
 library(ggplot2)
 library(readrba)
 library(lubridate)
+library(ggrepel)
 
 rounder <- function(value, round) {
   sign <- sign(value)
@@ -150,20 +151,32 @@ graph_data[, variable := ordered(variable,
 # Show past year only
 graph_data <- graph_data[scrape_date > Sys.Date() %m-% years(1)]
 
+# labels only
+label_data <- graph_data[scrape_date == max(scrape_date)]
+
+# extend the x-axis
+expand_date_axis <- function(limits) {
+  # Ensure that the input limits are Date objects.
+  lower <- as.Date(limits[1])
+  upper <- as.Date(limits[2])
+  c(lower, upper %m+% months(2))
+}
+
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line() +
+  geom_text_repel(data = label_data, aes(label = variable),
+                  nudge_x = 10, segment.colour = NA, hjust = 0) +
   labs(title = "Implied cash rate cuts by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month", limits = expand_date_axis) +
   scale_y_continuous(
     breaks = function(x) seq(rounder(range(x)[1], 0.25), rounder(range(x)[2], 0.25), by = 0.25),
     sec.axis = sec_axis(trans = ~ . / -0.25, name = "Number of 0.25ppt cuts")
     ) +
   scale_colour_viridis_d() +
   theme_bw() + 
-  theme(legend.position = "top",
-        legend.title = element_blank()) 
+  theme(legend.position = "none") 
 
 
 ```
