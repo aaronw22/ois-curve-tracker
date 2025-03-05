@@ -132,16 +132,21 @@ ggplot(graph_data, aes(x = scrape_date, y = date)) +
 graph_data <- copy(all_data)
 graph_data <- graph_data[!is.na(cash_rate)]
 
+# Get projected cash rates
 graph_data <- 
   graph_data[, .(rate_end = cash_rate[date == max(date)],
                  rate_6m = cash_rate[date == floor_date(scrape_date, "month") %m+% months(6)],
-                 rate_1y = cash_rate[date == floor_date(scrape_date, "month") %m+% years(1)],
-                 peak_rate = max(cash_rate)
+                 rate_1y = cash_rate[date == floor_date(scrape_date, "month") %m+% years(1)]
                  ),
              by = scrape_date]
-graph_data[, let(rate_end = rate_end - peak_rate,
-                 rate_6m = rate_6m - peak_rate,
-                 rate_1y = rate_1y - peak_rate)]
+
+# Get OCR on the scrape date
+graph_data[ocr_ts, on = .(scrape_date >= date), cash_rate := value]
+
+# Calculate the change as the diff between the lookahead rate and the OCR on the day
+graph_data[, let(rate_end = rate_end - cash_rate,
+                 rate_6m = rate_6m - cash_rate,
+                 rate_1y = rate_1y - cash_rate)]
 
 graph_data <- melt(graph_data, measure.vars = c("rate_end", "rate_6m", "rate_1y"))
 graph_data[, variable := ordered(variable, 
@@ -162,11 +167,14 @@ expand_date_axis <- function(limits) {
   c(lower, upper %m+% months(2))
 }
 
+latest_date <- max(graph_data$scrape_date)
+
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line() +
   geom_text_repel(data = label_data, aes(label = variable),
-                  nudge_x = 20, segment.colour = NA, hjust = 0) +
+                  nudge_x = 5, segment.colour = NA, hjust = 0,
+                  xlim = c(latest_date, NA)) +
   labs(title = "Implied cash rate cuts by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month", limits = expand_date_axis) +
