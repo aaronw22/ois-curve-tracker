@@ -151,7 +151,7 @@ graph_data[, let(rate_end = rate_end - cash_rate,
 graph_data <- melt(graph_data, measure.vars = c("rate_end", "rate_6m", "rate_1y"))
 graph_data[, variable := ordered(variable, 
                                 c("rate_6m", "rate_1y", "rate_end"), 
-                                c("6 months ahead", "1 year ahead", "End period"))]
+                                c("6 months", "1 year", "End period"))]
 
 # Show past year only
 graph_data <- graph_data[scrape_date > Sys.Date() %m-% years(1)]
@@ -164,7 +164,7 @@ expand_date_axis <- function(limits) {
   # Ensure that the input limits are Date objects.
   lower <- as.Date(limits[1])
   upper <- as.Date(limits[2])
-  c(lower, upper %m+% months(2))
+  c(lower, upper %m+% months(3))
 }
 
 latest_date <- max(graph_data$scrape_date)
@@ -172,8 +172,10 @@ latest_date <- max(graph_data$scrape_date)
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line() +
-  geom_text_repel(data = label_data, aes(label = variable),
-                  nudge_x = 5, segment.colour = NA, hjust = 0,
+  geom_point(data = graph_data[scrape_date == max(scrape_date)],
+             size = 2) +
+  geom_text_repel(data = label_data, aes(label = paste0(variable, ": ", round(value, 2), "%")),
+                  nudge_x = 7, segment.colour = NA, hjust = 0,
                   xlim = c(latest_date, NA)) +
   labs(title = "Implied cash rate cuts by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
@@ -185,6 +187,5 @@ ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   scale_colour_viridis_d() +
   theme_bw() + 
   theme(legend.position = "none") 
-
 
 ```
