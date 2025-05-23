@@ -101,28 +101,59 @@ if (length(names(change_data)) == 5) {
 
 ```{r graph-next-cut, echo=FALSE, dev='svg', warning=FALSE}
 graph_data <- copy(all_data)
-graph_data <- graph_data[date >= as.Date(scrape_date) %m-% months(1)] # only future values should exist?
-graph_data[ocr_ts, on = .(scrape_date >= date), actual_ocr := value]
-graph_data[, below := cash_rate < actual_ocr - 0.25]
-graph_data[, rising := cash_rate < shift(cash_rate, -1), by = scrape_date]
-graph_data[rising == TRUE, below := FALSE] # Stops the hiking cycle being picked up as a drop
-graph_data[, below := as.numeric(below)]
-graph_data[, below := cumsum(below), by = scrape_date]
-graph_data <- unique(graph_data[below == 1], by = c("scrape_date", "below"))
 
 # Data prior to Feb 23 is a bit funky because it was still peak hiking cycle
 graph_data <- graph_data[scrape_date > "2023-02-01"]
 
+# Only future values should exist
+graph_data <- graph_data[date >= as.Date(scrape_date) %m-% months(1)]
+
+# Join actual cash rate data
+graph_data[ocr_ts, on = .(scrape_date >= date), actual_ocr := value]
+
+# Calculate the months when cash rate cuts become fully priced in
+graph_data[, cr_gap := cash_rate - actual_ocr]
+graph_data[, cr_incr := cr_gap %/% 0.25]
+
+# Keep cutting cycles only
+graph_data <- graph_data[cr_incr < 0]
+
 # Keep predictions that are in the future only
 graph_data <- graph_data[date >= floor_date(Sys.Date(), "month")]
 
-ggplot(graph_data, aes(x = scrape_date, y = date)) +
-  geom_line(colour = "#08519c") +
-  labs(title = "Implied month of next cash rate cut",
-       x = "Data scrape date", y = NULL) +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months", date_minor_breaks = "1 month") +
+# Remove duplicates so each scrape date and cr_incr has only the earliest date value
+setorder(graph_data, scrape_date, date)
+graph_data <- unique(graph_data, by = c("scrape_date", "cr_incr"))
+
+# Using a CJ with all the combinations of scrape_date, date and cr_incr, create a new data.table that has NA for all the missing dates
+graph_data2 <- CJ(scrape_date = unique(graph_data$scrape_date),
+                  cr_incr = unique(graph_data$cr_incr))
+graph_data2[graph_data, on = .(scrape_date, cr_incr), date := date]
+
+# Keep the latest date and go back in 1 week increments only
+dates_to_keep <- data.table(scrape_date = unique(graph_data2$scrape_date))
+setorder(dates_to_keep, -scrape_date)
+dates_to_keep[, days_before := max(scrape_date) - scrape_date]
+dates_to_keep[, weeks_before := days_before %% 7]
+dates_to_keep <- dates_to_keep[weeks_before == 0]
+dates_to_keep[, c("days_before", "weeks_before") := NULL]
+
+graph_data2 <- graph_data2[dates_to_keep, on = .(scrape_date), nomatch = 0L]
+
+# Remove negative sign for aesthetics
+graph_data2[, cr_incr := -cr_incr]
+
+ggplot(graph_data2, aes(x = scrape_date, y = date, colour = factor(cr_incr))) +
+  geom_point() + geom_line() +
+  labs(title = "Implied date of fully priced in cash rate cuts",
+     x = "Data scrape date", y = NULL,
+     colour = "Cut number") +
+  scale_x_date(date_labels = "%b %y", date_breaks = "2 months", date_minor_breaks = "1 month") +
   scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL, sec.axis = dup_axis()) +
-  theme_bw()
+  scale_colour_viridis_d() +
+  theme_bw() +
+  theme(legend.position = "inside", legend.position.inside = c(0.15, 0.85)) +
+  guides(colour = guide_legend(nrow = 2, byrow = TRUE))
 
 ```
 
