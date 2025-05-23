@@ -111,12 +111,16 @@ graph_data <- graph_data[date >= as.Date(scrape_date) %m-% months(1)]
 # Join actual cash rate data
 graph_data[ocr_ts, on = .(scrape_date >= date), actual_ocr := value]
 
-# Calculate the months when cash rate cuts become fully priced in
+# Keep cutting cycles only
 graph_data[, cr_gap := cash_rate - actual_ocr]
+graph_data <- graph_data[cr_gap < 0]
+
+# Calculate the months when cash rate cuts become fully priced in
 graph_data[, cr_incr := cr_gap %/% 0.25]
 
-# Keep cutting cycles only
-graph_data <- graph_data[cr_incr < 0]
+# When ve < 0, %/% rounds negative numbers more negative so the value is too large once we take the absolute value
+graph_data[, cr_incr := cr_incr + 1]
+graph_data <- graph_data[cr_incr != 0]
 
 # Keep predictions that are in the future only
 graph_data <- graph_data[date >= floor_date(Sys.Date(), "month")]
