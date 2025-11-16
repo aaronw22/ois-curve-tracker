@@ -8,7 +8,16 @@ library(reticulate)
 Sys.setenv(TZ = "Australia/Sydney")
 
 # Run Python script to scrape the data and save results to csv
-py_install(c("selenium", "pandas", "bs4", "lxml"))
+py_require(
+  packages = c(
+    "selenium",
+    "pandas",
+    # bs4 is the import name, but PyPI package is beautifulsoup4:
+    "beautifulsoup4",
+    "lxml"
+  ),
+  python_version = "3.11"  # or whatever you want
+)
 py <- py_run_file("R/scraper.py")
 
 # Load existing data, combine with latest data
