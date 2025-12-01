@@ -13,6 +13,4 @@ and converts it into a simple csv.
 
 <img src="man/figures/README-graph-change-1.svg" width="100%" />
 
-<img src="man/figures/README-graph-next-cut-1.svg" width="100%" />
-
 <img src="man/figures/README-graph-total-cuts-1.svg" width="100%" />
