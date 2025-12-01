@@ -147,17 +147,18 @@ graph_data2 <- graph_data2[dates_to_keep, on = .(scrape_date), nomatch = 0L]
 # Remove negative sign for aesthetics
 graph_data2[, cr_incr := -cr_incr]
 
-ggplot(graph_data2, aes(x = scrape_date, y = date, colour = factor(cr_incr))) +
-  geom_point() + geom_line() +
-  labs(title = "Implied date of fully priced in cash rate cuts",
-     x = "Data scrape date", y = NULL,
-     colour = "Cut number") +
-  scale_x_date(date_labels = "%b %y", date_breaks = "2 months", date_minor_breaks = "1 month") +
-  scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL, sec.axis = dup_axis()) +
-  scale_colour_viridis_d() +
-  theme_bw() +
-  theme(legend.position = "inside", legend.position.inside = c(0.15, 0.85)) +
-  guides(colour = guide_legend(nrow = 2, byrow = TRUE))
+# Removing this graph now that there are no more cash rate cuts priced in (Dec 25)
+# ggplot(graph_data2, aes(x = scrape_date, y = date, colour = factor(cr_incr))) +
+#   geom_point() + geom_line() +
+#   labs(title = "Implied date of fully priced in cash rate cuts",
+#      x = "Data scrape date", y = NULL,
+#      colour = "Cut number") +
+#   scale_x_date(date_labels = "%b %y", date_breaks = "2 months", date_minor_breaks = "1 month") +
+#   scale_y_date(date_labels = "%b %y", date_breaks = "1 months", minor_breaks = NULL, sec.axis = dup_axis()) +
+#   scale_colour_viridis_d() +
+#   theme_bw() +
+#   theme(legend.position = "inside", legend.position.inside = c(0.15, 0.85)) +
+#   guides(colour = guide_legend(nrow = 2, byrow = TRUE))
 
 ```
 
@@ -212,7 +213,7 @@ ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_text_repel(data = label_data, aes(label = paste0(variable, ": ", round(value, 2), "%")),
                   nudge_x = 7, segment.colour = NA, hjust = 0,
                   xlim = c(latest_date, NA)) +
-  labs(title = "Implied cash rate cuts by period ahead",
+  labs(title = "Cash rate change by period ahead",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month", limits = expand_date_axis) +
   scale_y_continuous(
