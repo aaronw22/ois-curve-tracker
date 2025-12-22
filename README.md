@@ -9,8 +9,8 @@ and converts it into a simple csv.
 
 ## Implied yield curve
 
-<img src="man/figures/README-graph-main-1.svg" width="100%" />
+<img src="man/figures/README-graph-main-1.svg" alt="" width="100%" />
 
-<img src="man/figures/README-graph-change-1.svg" width="100%" />
+<img src="man/figures/README-graph-change-1.svg" alt="" width="100%" />
 
-<img src="man/figures/README-graph-total-cuts-1.svg" width="100%" />
+<img src="man/figures/README-graph-total-cuts-1.svg" alt="" width="100%" />
