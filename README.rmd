@@ -137,7 +137,7 @@ graph_data2[graph_data, on = .(scrape_date, cr_incr), date := date]
 # Keep the latest date and go back in 1 week increments only
 dates_to_keep <- data.table(scrape_date = unique(graph_data2$scrape_date))
 setorder(dates_to_keep, -scrape_date)
-dates_to_keep[, days_before := max(scrape_date) - scrape_date]
+dates_to_keep[, days_before := as.numeric(max(scrape_date) - scrape_date)]
 dates_to_keep[, weeks_before := days_before %% 7]
 dates_to_keep <- dates_to_keep[weeks_before == 0]
 dates_to_keep[, c("days_before", "weeks_before") := NULL]
