@@ -62,18 +62,18 @@ while not_empty == False:
 driver.quit()
 
 # Keep only useful columns
-cr_futures = cr_futures[['Expiry Date', 'Previous Settlement', 'Previous Settlement Time']]
+cr_futures = cr_futures[['Expiry date', 'Previous settlement']]
 
 # Rename columns
-cr_futures = cr_futures.rename(columns={'Expiry Date': 'date', 'Previous Settlement': 'cash_rate', 'Previous Settlement Time': 'scrape_date'})
+cr_futures = cr_futures.rename(columns={'Expiry date': 'date', 'Previous settlement': 'rate_date'})
 
 ## Clean up the data
 
 # Extract cash rate numeric
-cr_futures['cash_rate'] = cr_futures['cash_rate'].str.replace(r'^(.*)As of \d+/\d+/\d+', r'\1', regex=True).str.strip()
+cr_futures['cash_rate'] = cr_futures['rate_date'].str.replace(r'^(.*)As of \d+/\d+/\d+', r'\1', regex=True).str.strip()
 
 # Extract data scrape date
-cr_futures['scrape_date'] = cr_futures['scrape_date'].str.replace(r'As of (\d+/\d+/\d+)', r'\1', regex=True)
+cr_futures['scrape_date'] = cr_futures['rate_date'].str.replace(r'^[\d\. ]+ As of (\d{2}/\d{2}/\d{2})', r'\1', regex=True)
 
 # Convert month/year to full date format
 cr_futures['date'] = pd.to_datetime(cr_futures['date'].apply(lambda x: f"01 {x}"), format="%d %b %y")
@@ -83,6 +83,7 @@ cr_futures['cash_rate'] = 100 - pd.to_numeric(cr_futures['cash_rate'], errors = 
 cr_futures['cash_rate'] = cr_futures['cash_rate'].round(2)
 cr_futures = cr_futures[cr_futures['cash_rate'].notna()]
 cr_futures['scrape_date'] = pd.to_datetime(cr_futures['scrape_date'], format="%d/%m/%y")
+cr_futures.drop(columns='rate_date', inplace = True)
 
 ## Save to file
 
