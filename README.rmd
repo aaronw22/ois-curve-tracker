@@ -46,6 +46,9 @@ all_data <- fread("combined-data/all_data.csv", colClasses = c("Date", "numeric"
 ocr_ts <- setDT(read_rba_seriesid("FIRMMCRTD"))
 ocr <- ocr_ts[date == max(date), value]
 
+ocr_ts[, prev_rate := shift(value)]
+ocr_ts[, rate_chg := value != prev_rate]
+
 ```
 
 ```{r graph-main, echo=FALSE, dev='svg', warning=FALSE}
@@ -205,15 +208,20 @@ expand_date_axis <- function(limits) {
 
 latest_date <- max(graph_data$scrape_date)
 
+# Add rate change indicators
+rate_chg <- ocr_ts[(rate_chg) & date >= min(graph_data$scrape_date)]
+
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
   geom_line() +
+  geom_vline(xintercept = rate_chg$date, linetype = "dashed") +
   geom_point(data = graph_data[scrape_date == max(scrape_date)],
              size = 2) +
   geom_text_repel(data = label_data, aes(label = paste0(variable, ": ", round(value, 2), "%")),
                   nudge_x = 7, segment.colour = NA, hjust = 0,
                   xlim = c(latest_date, NA)) +
   labs(title = "Cash rate change by period ahead",
+       caption = "Vertical dashed lines show rate changes",
        x = "Data scrape date", y = "Change in cash rate (ppt)") +
   scale_x_date(date_labels = "%b %Y", date_breaks = "3 months", date_minor_breaks = "1 month", limits = expand_date_axis) +
   scale_y_continuous(
@@ -268,8 +276,12 @@ expand_date_axis <- function(limits) {
 
 latest_date <- max(graph_data$scrape_date)
 
+# Add rate change indicators
+rate_chg <- ocr_ts[(rate_chg) & date >= min(graph_data$scrape_date)]
+
 ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
   geom_hline(yintercept = 0, colour = "black", linewidth = 0.5, linetype = "solid") +
+  geom_vline(xintercept = rate_chg$date, linetype = "dashed") +
   geom_line() +
   geom_point(data = graph_data[scrape_date == max(scrape_date)],
              size = 2) +
