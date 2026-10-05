@@ -236,31 +236,7 @@ ggplot(graph_data, aes(x = scrape_date, y = value, colour = variable)) +
 
 ```{r graph-total-cuts-3m, echo=FALSE, dev='svg', warning=FALSE}
 
-graph_data <- copy(all_data)
-graph_data <- graph_data[!is.na(cash_rate)]
-
-# Get projected cash rates
-graph_data <- 
-  graph_data[, .(rate_end = cash_rate[date == max(date)],
-                 rate_6m = cash_rate[date == floor_date(scrape_date, "month") %m+% months(6)],
-                 rate_1y = cash_rate[date == floor_date(scrape_date, "month") %m+% years(1)]
-                 ),
-             by = scrape_date]
-
-# Get OCR on the scrape date
-graph_data[ocr_ts, on = .(scrape_date >= date), cash_rate := value]
-
-# Calculate the change as the diff between the lookahead rate and the OCR on the day
-graph_data[, let(rate_end = rate_end - cash_rate,
-                 rate_6m = rate_6m - cash_rate,
-                 rate_1y = rate_1y - cash_rate)]
-
-graph_data <- melt(graph_data, measure.vars = c("rate_end", "rate_6m", "rate_1y"))
-graph_data[, variable := ordered(variable, 
-                                c("rate_6m", "rate_1y", "rate_end"), 
-                                c("6 months", "1 year", "End period"))]
-
-# Show past year only
+# Show past 3 months only
 graph_data <- graph_data[scrape_date > Sys.Date() %m-% months(3)]
 
 # labels only
